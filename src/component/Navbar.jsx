@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
-import Typography from "@mui/material/Typography";
 import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -33,16 +32,16 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="flex justify-between items-center w-screen md:px-20 gap-20 p-4 bg-green text-white">
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-          Bus Booking
-        </Typography> 
+      <nav className="sticky top-0 z-30 flex justify-between items-center w-full md:px-20 gap-20 p-4 bg-green text-white shadow-md">
+        <h3 className="text-lg lg:text-2xl font-medium">
+          Book MyBus
+        </h3> 
 
         {/* for desktop */} 
         <ul className="hidden md:flex items-center gap-10">
           <li>
             <NavLink
-              to="/buses"
+              to="/"
               className={({ isActive }) => (isActive ? isActiveDesktop : "")}
             >
               Bus
@@ -72,10 +71,10 @@ export default function Navbar() {
         </ul>
 
         {/* for mobile */}
-        <ul className="md:hidden flex gap-5">
+        <ul className="md:hidden flex gap-3">
           <li>
             <NavLink
-              to="/buses"
+              to="/"
               className={({ isActive }) => (isActive ? isActiveMobile : "")}
             >
               <DirectionsBusIcon sx={{ fontSize: "30px" }} />

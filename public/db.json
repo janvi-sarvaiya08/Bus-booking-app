@@ -80,7 +80,7 @@
       "to": "Delhi",
       "seatsAvailable": 20,
       "price": 500,
-      "bookedSeats": [19, 20, 1, 2, 3]
+      "bookedSeats": [19, 20, 1, 2]
     },
     {
       "id": "9",
@@ -187,22 +187,6 @@
       "selectedSeats": [7, 8],
       "totalPrice": 1300,
       "bookingDate": "2025-12-11T11:32:41.070Z"
-    },
-    {
-      "id": "48c1",
-      "customer": {
-        "name": "om",
-        "phoneNumber": "9632587412",
-        "email": "om234@gmail.com"
-      },
-      "busId": "8",
-      "busType": "AC",
-      "busName": "VRL Travels",
-      "from": "Indore",
-      "to": "Delhi",
-      "selectedSeats": [3],
-      "totalPrice": 500,
-      "bookingDate": "2025-12-11T11:33:19.469Z"
     },
     {
       "id": "5136",

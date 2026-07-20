@@ -1,12 +1,12 @@
-import api from "./axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "./supabase";
 
 export const useFetchBuses = () => {
   const fetchBuses = async () => {
-    const response = await api.get("/Bus");
-    return response.data;
+    const { data, error } = await supabase.from("Bus").select("*");
+    if (error) throw error;
+    return data;
   };
-
   return useQuery({
     queryKey: ["buses"],
     queryFn: fetchBuses,
@@ -16,8 +16,8 @@ export const useFetchBuses = () => {
 export const usePostBooking = () => {
   const queryClient = useQueryClient();
   const postData = async (bookingData) => {
-    const response = await api.post("/Booking", bookingData);
-    return response.data;
+    const { error } = await supabase.from("Booking").insert(bookingData);
+    if (error) throw error;
   };
 
   return useMutation({
@@ -30,8 +30,9 @@ export const usePostBooking = () => {
 
 export const useFetchBooking = () => {
   const fetchBooking = async () => {
-    const response = await api.get("/Booking");
-    return response.data;
+    const { data, error } = await supabase.from("Booking").select("*");
+    if (error) throw error;
+    return data;
   };
 
   return useQuery({
@@ -43,18 +44,29 @@ export const useFetchBooking = () => {
 export const useDeleteBooking = () => {
   const queryClient = useQueryClient();
   const deleteBooking = async (booking) => {
-    await api.delete(`/Booking/${booking.id}`);
+    const { data: bus, error: fetchError } = await supabase
+      .from("Bus")
+      .select("*")
+      .eq("id", booking.busId)
+      .single();
+    if (fetchError) throw fetchError;
 
-    const fetchBus = await api.get(`/Bus/${booking.busId}`);
-    const bus = fetchBus.data;
-
-    const updateBookedSeats = bus.bookedSeats.filter(
-      (seat) => !booking.selectedSeats.includes(seat)
+    const updatedBookedSeats = (bus.bookedSeats || []).filter(
+      (seat) => !booking.selectedSeats.includes(seat),
     );
 
-    await api.patch(`/Bus/${booking.busId}`, {
-      bookedSeats: updateBookedSeats,
-    });
+    const { error: updateError } = await supabase
+      .from("Bus")
+      .update({ bookedSeats: updatedBookedSeats })
+      .eq("id", booking.busId);
+    if (updateError) throw updateError;
+
+    const { error: deleteError } = await supabase
+      .from("Booking")
+      .delete()
+      .eq("id", booking.id);
+    if (deleteError) throw deleteError;
+
     return true;
   };
 
@@ -62,6 +74,7 @@ export const useDeleteBooking = () => {
     mutationFn: deleteBooking,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["booking"] });
+      queryClient.invalidateQueries({ queryKey: ["buses"] });
     },
   });
 };
@@ -69,21 +82,34 @@ export const useDeleteBooking = () => {
 export const useDeleteAllBookings = () => {
   const queryClient = useQueryClient();
   const deleteAllBookings = async () => {
-    const { data: bookings } = await api.get("/Booking");
+    const { data: bookings, error: fetchBookingsError } = await supabase
+      .from("Booking")
+      .select("*");
+    if (fetchBookingsError) throw fetchBookingsError;
 
     for (const booking of bookings) {
-      const fetchBus = await api.get(`/Bus/${booking.busId}`);
-      const bus = fetchBus.data;
+      const { data: bus, error: fetchBusError } = await supabase
+        .from("Bus")
+        .select("*")
+        .eq("id", booking.busId)
+        .single();
+      if (fetchBusError) throw fetchBusError;
 
-      const updatedBookedSeats = bus.bookedSeats.filter(
-        (seat) => !booking.selectedSeats.includes(seat)
+      const updatedBookedSeats = (bus.bookedSeats || []).filter(
+        (seat) => !booking.selectedSeats.includes(seat),
       );
 
-      await api.patch(`/Bus/${booking.busId}`, {
-        bookedSeats: updatedBookedSeats,
-      });
+      const { error: updateError } = await supabase
+        .from("Bus")
+        .update({ bookedSeats: updatedBookedSeats })
+        .eq("id", booking.busId);
+      if (updateError) throw updateError;
 
-      await api.delete(`/Booking/${booking.id}`);
+      const { error: deleteError } = await supabase
+        .from("Booking")
+        .delete()
+        .eq("id", booking.id);
+      if (deleteError) throw deleteError;
     }
   };
 
@@ -91,6 +117,7 @@ export const useDeleteAllBookings = () => {
     mutationFn: deleteAllBookings,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["booking"] });
+      queryClient.invalidateQueries({ queryKey: ["buses"] });
     },
   });
 };

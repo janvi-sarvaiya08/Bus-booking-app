@@ -12,22 +12,69 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
+import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
+import DeleteSweepRoundedIcon from "@mui/icons-material/DeleteSweepRounded";
 
-import { Popover } from "antd";
+import { Tooltip } from "antd";
 
 const StyledDataGrid = styled(DataGrid)(() => ({
+  border: "none",
+  borderRadius: "6px",
+  backgroundColor: "#ffffff",
+  "--DataGrid-rowBorderColor": "#e5e7eb",
+  "& .MuiDataGrid-columnHeaders": {
+    backgroundColor: "var(--color-green)",
+  },
   "& .MuiDataGrid-columnHeader": {
     backgroundColor: "var(--color-green)",
-    color: "white",
-    fontSize: 16,
+    color: "#ffffff",
+    fontSize: 15,
+  },
+  "& .MuiDataGrid-columnHeaderTitle": {
+    fontWeight: 700,
+  },
+  "& .MuiDataGrid-columnSeparator": {
+    display: "none",
   },
   "& .MuiDataGrid-cell": {
-    backgroundColor: "#EEEEEE",
-    color: "black",
+    backgroundColor: "#ffffff",
+    color: "#374151",
+    borderColor: "#e5e7eb",
+  },
+  "& .MuiDataGrid-row:nth-of-type(even) .MuiDataGrid-cell": {
+    backgroundColor: "#f8fafc",
+  },
+  "& .MuiDataGrid-row:hover .MuiDataGrid-cell": {
+    backgroundColor: "rgba(58, 160, 143, 0.1)",
   },
   "& .MuiDataGrid-footerContainer": {
     backgroundColor: "var(--color-green)",
-    color: "white",
+    color: "#ffffff",
+    borderTop: "none",
+  },
+  "& .MuiTablePagination-root, & .MuiTablePagination-root *": {
+    color: "#ffffff",
+  },
+  "& .MuiDataGrid-overlay": {
+    backgroundColor: "rgba(255,255,255,0.7)",
+  },
+  ".dark & .MuiDataGrid-cell": {
+    backgroundColor: "var(--color-dark-card)",
+    color: "#ffffff",
+    borderColor: "rgba(255,255,255,0.1)",
+  },
+  ".dark & .MuiDataGrid-row:nth-of-type(even) .MuiDataGrid-cell": {
+    backgroundColor: "rgba(255,255,255,0.04)",
+  },
+  ".dark & .MuiDataGrid-row:hover .MuiDataGrid-cell": {
+    backgroundColor: "var(--color-gray)",
+  },
+  ".dark & .MuiDataGrid-overlay": {
+    backgroundColor: "rgba(34,40,49,0.75)",
+    color: "#ffffff",
+  },
+  ".dark &": {
+    backgroundColor: "var(--color-gray)",
   },
 }));
 
@@ -57,14 +104,22 @@ export default function MyBooking() {
         val.to.toLowerCase().includes(tableData) ||
         val.selectedSeats.join().toLowerCase().includes(tableData) ||
         val.totalPrice.toString().includes(tableData.toString()) ||
-        val.bookingDate.toLowerCase().includes(tableData)
+        val.bookingDate.toLowerCase().includes(tableData),
     );
   }, [Booking, searchData]);
 
   if (error) {
     return (
-      <div className="text-center text-2xl mt-10 font-bold text-red-600">
-        Error: {error.message}
+      <div className="flex items-center justify-center min-h-screen bg-linear-to-b from-blue via-blue to-white dark:from-gray dark:via-gray dark:to-gray px-4">
+        <div className="text-center bg-white dark:bg-dark-card rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 px-8 py-10">
+          <Typography
+            variant="h5"
+            className="text-red-600 dark:text-red-400"
+            sx={{ fontWeight: 700 }}
+          >
+            Error: {error.message}
+          </Typography>
+        </div>
       </div>
     );
   }
@@ -88,7 +143,6 @@ export default function MyBooking() {
   };
 
   const columns = [
-    { field: "id", headerName: "Id", width: 70 },
     {
       field: "name",
       headerName: "Name",
@@ -98,7 +152,7 @@ export default function MyBooking() {
     {
       field: "email",
       headerName: "Email",
-      width: 180,
+      width: 220,
       renderCell: (params) => params.row.customer.email,
     },
     {
@@ -115,30 +169,23 @@ export default function MyBooking() {
       width: 200,
       valueGetter: (value, row) => `${row.from} >> ${row.to}`,
     },
-    { field: "selectedSeats", headerName: "Selected Seats", width: 120 },
+    { field: "selectedSeats", headerName: "Selected Seats", width: 170 },
     { field: "totalPrice", headerName: "Price", width: 90 },
-    { field: "bookingDate", headerName: "Booking Date", width: 180 },
+    { field: "bookingDate", headerName: "Booking Date", width: 200 },
     {
       field: "actions",
       headerName: "Actions",
       width: 95,
       renderCell: (params) => {
         return (
-          <>
-            <Popover
-              content="Are you want to delete the Booking?"
-              title="Delete the Booking!"
-              trigger="hover"
-              placement="right"
+          <Tooltip placement="right" title="Delete">
+            <button
+              className="grid place-items-center h-9 w-9 my-1.5 ml-2 rounded-full bg-red-100 text-red-500 hover:bg-red-500 dark:bg-red-100/10 hover:text-white transition-colors duration-200 cursor-pointer"
+              onClick={() => handleOpenDialog(params.row)}
             >
-              <button
-                className="bg-green h-10 my-1.5 text-white p-1 rounded ml-4 cursor-pointer"
-                onClick={() => handleOpenDialog(params.row)}
-              >
-                <DeleteIcon className="mb-5" />
-              </button>
-            </Popover>
-          </>
+              <DeleteIcon fontSize="small" />
+            </button>
+          </Tooltip>
         );
       },
     },
@@ -147,41 +194,52 @@ export default function MyBooking() {
   const paginationModel = { page: 0, pageSize: 10 };
 
   return (
-    <div className="min-h-screen w-screen bg-blue dark:bg-gray dark:text-white">
-      <Container maxWidth="xl" className="pt-7">
-        <Typography variant="h4" className="text-center">
-          Customer Details
+    <div className="h-[calc(100dvh-64px)] w-full overflow-hidden flex flex-col bg-linear-to-b from-blue via-blue to-white dark:from-gray dark:via-gray dark:to-gray">
+      <Container maxWidth="xl" className="py-8 flex-1 min-h-0 flex flex-col">
+        <Typography
+          variant="h4"
+          className="text-center text-gray-700 dark:text-white shrink-0"
+          sx={{ fontWeight: 700 }}
+        >
+          Booking Details
         </Typography>
 
-        <input
-          type="text"
-          name="searchData"
-          placeholder="Search here..."
-          value={searchData}
-          onChange={(e) => setSearchData(e.target.value)}
-          className="border border-gray rounded-sm py-2 px-3 mt-3 ml-5 dark:border-gray-400  dark:bg-dark-card dark:text-white"
-        />
-    
-        <button
-          className="mt-6 bg-green text-white px-4 py-2 font-bold rounded cursor-pointer ml-5"
-          onClick={() => setOpenAllDelete(true)}
-        >
-          Delete All Bookings
-        </button>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mt-6 mb-4 shrink-0">
+          <div className="relative w-full sm:max-w-xs">
+            <SearchRoundedIcon
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-green pointer-events-none"
+              fontSize="small"
+            />
+            <input
+              type="text"
+              name="searchData"
+              placeholder="Search here..."
+              value={searchData}
+              onChange={(e) => setSearchData(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 placeholder-gray-400 outline-none transition focus:border-green focus:ring-2 focus:ring-green/20 dark:border-gray-600 dark:bg-gray-800/60 dark:text-white dark:placeholder-gray-400"
+            />
+          </div>
 
-        <StyledDataGrid
-          rows={filterData}
-          columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          hideFooterSelectedRowCount
-          disableColumnSorting={true}
-          loading={isLoading}
-          sx={{
-            border: "1px solid gray",
-            textAlign: "center",
-            margin: "20px",
-          }}
-        />
+          <button
+            className="flex items-center justify-center gap-2 bg-green text-white px-4 py-2.5 font-semibold rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:scale-105 active:scale-95"
+            onClick={() => setOpenAllDelete(true)}
+          >
+            <DeleteSweepRoundedIcon fontSize="small" />
+            Delete All Bookings
+          </button>
+        </div>
+
+        <div className="flex-1 min-h-0 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <StyledDataGrid
+            rows={filterData}
+            columns={columns}
+            initialState={{ pagination: { paginationModel } }}
+            hideFooterSelectedRowCount
+            disableColumnSorting={true}
+            loading={isLoading}
+            sx={{ height: "100%" }}
+          />
+        </div>
 
         <DeleteBookingDialog
           open={open}
