@@ -1,6 +1,5 @@
 ### Bus Booking App
 Complete Responsive Bus Booking App using React js, Tailwind css, Zustand, React Query and Supabase.<br> <br>
-
 Design and develop a small-scale web application that allows users to search, view, book, and manage bus services.
 The application uses **Supabase** as the backend for database management and real-time data handling, providing a modern full-stack experience.
 
