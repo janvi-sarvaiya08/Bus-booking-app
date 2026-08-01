@@ -1,9 +1,0 @@
-id,customer,busId,busType,busName,from,to,selectedSeats,totalPrice,bookingDate
-13,"{""name"":""alice"",""phoneNumber"":""7894561230"",""email"":""aeni11.am@gmail.com""}",2,Non-AC,Dev Travel,Surat,Puna,"[3,4]",1100,2026-07-17 12:57:54.512+00
-14,"{""name"":""om"",""phoneNumber"":""9924840384"",""email"":""om@gmail.com""}",10,AC,VRL Travels,Mumbai,Goa,"[5,6,9]",1050,2026-07-17 12:58:48.351+00
-15,"{""name"":""amelia"",""phoneNumber"":""7405577282"",""email"":""amelia@gmail.com""}",2,Non-AC,Dev Travel,Surat,Puna,"[15,16]",1100,2026-07-17 12:59:25.423+00
-16,"{""name"":""jon"",""phoneNumber"":""9874563314"",""email"":""jon12@gmail.com""}",1,AC,Express Travels,Surat,Mumbai,"[3,4]",700,2026-07-17 13:00:25.466+00
-17,"{""name"":""diya"",""phoneNumber"":""7405577282"",""email"":""diya@gmail.com""}",6,Non-AC,Shree Travel,Mumbai,Indore,[1],400,2026-07-17 13:02:12.018+00
-,,,,,,,,,
-,,,,,,,,,
-,"Allow – insert, select, delete",,,,,,,,
